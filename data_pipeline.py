@@ -1,3 +1,6 @@
+from collections import Counter
+
+
 class DataPipeline():
 
     @staticmethod
@@ -14,13 +17,21 @@ class DataPipeline():
 
         def _read_data(self):
             data = (line.rstrip("\n").split(self.separator) for line in open(self.data_path))
-            self.columns = next(data) 
+            self.columns = next(data)
             self.rows = (dict(zip(self.columns, row)) for row in data)
-            
         
-        def sum(self, column):
-            self._read_data()
-            totals = (int(columns[column]) for columns in self.rows)
-            return sum(totals)
-            
 
+        def select(self, selected_columns):
+            self.selected = selected_columns
+            return self
+
+
+        def sum(self):
+            self._read_data()
+            rows = self.selected if self.select else self.columns
+            totals = Counter()
+            for row in self.rows:
+                for k in rows:
+                    totals[k] += int(row[k])
+
+            return dict(totals)
