@@ -10,9 +10,10 @@ class DataPipeline():
     
     class DataFrame():
 
-        def __init__(self, data_path, separator):
+        def __init__(self, data_path, separator, selected_columns=[]):
             self.data_path = data_path
             self.separator = separator
+            self.selected_columns = selected_columns
 
 
         def _read_data(self):
@@ -22,13 +23,16 @@ class DataPipeline():
         
 
         def select(self, selected_columns):
-            self.selected = selected_columns
-            return self
+            return DataPipeline.DataFrame(
+                data_path=self.data_path,
+                separator=self.separator,
+                selected_columns=selected_columns
+            )
 
 
         def sum(self):
             self._read_data()
-            rows = self.selected if self.select else self.columns
+            rows = self.selected_columns if self.selected_columns else self.columns
             totals = Counter()
             for row in self.rows:
                 for k in rows:
